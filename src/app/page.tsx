@@ -1,103 +1,117 @@
-import Image from "next/image";
+"use client";
+
+import { useSession, signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
+import { FcGoogle } from "react-icons/fc";
+import { BsCalendarDate } from "react-icons/bs";
+import { FaRegUser } from "react-icons/fa6";
+import { FaRegClock } from "react-icons/fa";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  useEffect(() => {
+    if (session?.user) {
+      if (!session.user.role) {
+        router.push("/role-selection");
+        return;
+      }
+      if (session.user.role === "SELLER") {
+        router.push("/seller/dashboard");
+      } else {
+        router.push("/buyer/appointments");
+      }
+    }
+  }, [session, router]);
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  if (session) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-red-100 flex flex-col items-center justify-center">
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12 flex items-center justify-center flex-col">
+          <TypewriterEffectSmooth
+            words={[{ text: "Scheduler" }, { text: "App" }]}
+          />
+          <TextGenerateEffect 
+          words="Connect your Google Calendar and start scheduling meetings" />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        <div className="max-w-4xl mx-auto ">
+          <div className="grid md:grid-cols-3 gap-8 mb-12">
+            <Card className="hover:scale-105 delay-75 duration-75 transition-all">
+              <CardHeader>
+                <BsCalendarDate className="h-8 w-12  mb-4" />
+                <CardTitle>Google Calendar Integration</CardTitle>
+                <CardDescription>
+                  Seamlessly sync with your Google Calendar for availability and
+                  booking
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="hover:scale-105 delay-75 duration-75 transition-all">
+              <CardHeader>
+                <FaRegUser className="h-8 w-12 mb-4" />
+                <CardTitle>Role-Based Access</CardTitle>
+                <CardDescription>
+                  Switch between Buyer and Seller roles with different
+                  permissions
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="hover:scale-105 delay-75 duration-75 transition-all">
+              <CardHeader>
+                <FaRegClock className="h-8 w-12 mb-4" />
+                <CardTitle>Real-time Scheduling</CardTitle>
+                <CardDescription>
+                  Book appointments instantly with real-time availability
+                  checking
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
+
+          <div className="text-center">
+            <Button
+              onClick={() => signIn("google")}
+              size="lg"
+              className="text-white  bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-between mr-2 mb-2
+
+              hover:scale-105 delay-75 duration-75 transition-all hover:font-bold"
+            >
+              <FcGoogle className="mr-2" />
+              Sign in with Google
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
