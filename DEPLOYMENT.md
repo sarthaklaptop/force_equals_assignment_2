@@ -63,22 +63,27 @@ This guide will help you deploy the Next.js Scheduler App to Vercel.
    - Output Directory: `.next` (default)
 
 3. **Set Environment Variables**:
-   In the Vercel dashboard, go to your project → Settings → Environment Variables and add:
+   In the Vercel dashboard, go to your project → Settings → Environment Variables and add each variable individually:
 
-   ```
-   DATABASE_URL=postgresql://username:password@host:port/database
-   NEXTAUTH_URL=https://your-app-name.vercel.app
-   NEXTAUTH_SECRET=your-random-secret-key-32-characters-minimum
-   GOOGLE_CLIENT_ID=your-google-client-id
-   GOOGLE_CLIENT_SECRET=your-google-client-secret
-   GOOGLE_CALENDAR_API_KEY=your-google-api-key
-   ```
+   **Step-by-step**:
+   1. Click "Add New" for each variable
+   2. Enter the exact name and value (see below)
+   3. Select all environments (Production, Preview, Development)
+   4. Click "Save"
 
-   **Important**: 
-   - Make sure to set these for all environments (Production, Preview, Development)
-   - NEXTAUTH_SECRET should be at least 32 characters long
-   - NEXTAUTH_URL should be your exact Vercel app URL (e.g., https://your-app-name.vercel.app)
-   - Do NOT use @ symbols or secret references - use the actual values
+   **Variables to add**:
+   - `DATABASE_URL` = `postgresql://username:password@host:port/database`
+   - `NEXTAUTH_URL` = `https://your-app-name.vercel.app` (your actual Vercel URL)
+   - `NEXTAUTH_SECRET` = `WAkruFg4AaxEVB+Po/5BHn+IEba+ZY2UgTF5mtJYumc=` (or generate your own)
+   - `GOOGLE_CLIENT_ID` = `your-google-client-id`
+   - `GOOGLE_CLIENT_SECRET` = `your-google-client-secret`
+   - `GOOGLE_CALENDAR_API_KEY` = `your-google-api-key` (optional)
+
+   **CRITICAL**: 
+   - ❌ **DO NOT** use @ symbols in values
+   - ❌ **DO NOT** use secret references
+   - ✅ **DO** enter the actual values directly
+   - ✅ **DO** set for all environments (Production, Preview, Development)
 
 4. **Deploy**:
    - Click "Deploy"
