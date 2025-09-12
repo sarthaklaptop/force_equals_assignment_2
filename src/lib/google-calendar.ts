@@ -13,7 +13,7 @@ export async function getGoogleAuth(userId: string) {
   const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
-    process.env.NEXTAUTH_URL + '/api/auth/callback/google'
+    `${process.env.NEXTAUTH_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/auth/callback/google`
   )
 
   oauth2Client.setCredentials({
