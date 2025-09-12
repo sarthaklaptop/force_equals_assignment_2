@@ -68,13 +68,17 @@ This guide will help you deploy the Next.js Scheduler App to Vercel.
    ```
    DATABASE_URL=postgresql://username:password@host:port/database
    NEXTAUTH_URL=https://your-app-name.vercel.app
-   NEXTAUTH_SECRET=your-random-secret-key
+   NEXTAUTH_SECRET=your-random-secret-key-32-characters-minimum
    GOOGLE_CLIENT_ID=your-google-client-id
    GOOGLE_CLIENT_SECRET=your-google-client-secret
    GOOGLE_CALENDAR_API_KEY=your-google-api-key
    ```
 
-   **Important**: Make sure to set these for all environments (Production, Preview, Development)
+   **Important**: 
+   - Make sure to set these for all environments (Production, Preview, Development)
+   - NEXTAUTH_SECRET should be at least 32 characters long
+   - NEXTAUTH_URL should be your exact Vercel app URL (e.g., https://your-app-name.vercel.app)
+   - Do NOT use @ symbols or secret references - use the actual values
 
 4. **Deploy**:
    - Click "Deploy"
@@ -129,22 +133,29 @@ After deployment, you need to run the database migrations:
 
 ### Common Issues
 
-1. **Database Connection Error**:
+1. **NEXTAUTH_URL Error**:
+   - **Error**: "Environment Variable 'NEXTAUTH_URL' references Secret 'nextauth_url', which does not exist"
+   - **Solution**: In Vercel dashboard, go to Settings → Environment Variables
+   - Set `NEXTAUTH_URL` to your actual Vercel app URL (e.g., `https://your-app-name.vercel.app`)
+   - Do NOT use @ symbols or secret references
+   - Make sure it's set for all environments (Production, Preview, Development)
+
+2. **Database Connection Error**:
    - Verify your `DATABASE_URL` is correct
    - Check if your database allows connections from Vercel's IPs
    - Ensure SSL is enabled if required
 
-2. **Google OAuth Error**:
+3. **Google OAuth Error**:
    - Verify redirect URIs match exactly
    - Check that Google Calendar API is enabled
    - Ensure client ID and secret are correct
 
-3. **Build Errors**:
+4. **Build Errors**:
    - Check that all environment variables are set
    - Verify TypeScript compilation
    - Check for missing dependencies
 
-4. **Runtime Errors**:
+5. **Runtime Errors**:
    - Check Vercel function logs
    - Verify API routes are working
    - Test database queries
@@ -198,3 +209,4 @@ If you encounter issues:
 2. Review the [NextAuth.js Documentation](https://next-auth.js.org)
 3. Check the [Prisma Documentation](https://www.prisma.io/docs)
 4. Open an issue in the GitHub repository
+
