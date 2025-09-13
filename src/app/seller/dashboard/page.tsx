@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar, Clock, Users, Settings, LogOut } from "lucide-react"
 import { signOut } from "next-auth/react"
-import { useMemo } from "react"
 
 interface Appointment {
   id: string
@@ -76,7 +75,7 @@ export default function SellerDashboard() {
 
   const loadAvailability = async () => {
     try {
-      const res = await fetch(`/api/availability?sellerId=${session?.user?.id}`)
+      const res = await fetch(`/api/availability?sellerId=${(session?.user as any)?.id}`)
       const data = await res.json()
       setAvailability(data.slots || [])
     } catch {}

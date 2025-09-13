@@ -53,7 +53,7 @@ export async function createCalendarEvent(
   description?: string
 ) {
   try {
-    let sellerAuth: any | null = null
+    let sellerAuth: import('google-auth-library').OAuth2Client | null = null
     try {
       sellerAuth = await getGoogleAuth(sellerId)
     } catch {
@@ -102,11 +102,11 @@ export async function createCalendarEvent(
     }
 
     // Create on seller calendar first (returns Google Meet link)
-    let sellerResponse: any = null
+    let sellerResponse: { data?: { id?: string; htmlLink?: string } } | null = null
     if (sellerCalendar) {
       sellerResponse = await sellerCalendar.events.insert({
         calendarId: 'primary',
-        requestBody: event as any,
+        requestBody: event,
         conferenceDataVersion: 1
       })
     }
@@ -122,7 +122,7 @@ export async function createCalendarEvent(
           attendees: [
             { email: buyer.email }
           ]
-        } as any,
+        },
         conferenceDataVersion: 1
       })
     } catch (e) {

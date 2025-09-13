@@ -40,19 +40,19 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
             name: user.name,
             image: user.image,
-            role: (user as any).role || null
+            role: (user as { role?: string }).role || null
           }
         }
       }
       // Ensure role is populated after first-time selection
-      if (token?.user?.id && !token.user.role) {
+      if ((token?.user as { id?: string })?.id && !(token.user as { role?: string }).role) {
         try {
           const dbUser = await prisma.user.findUnique({
-            where: { id: token.user.id },
+            where: { id: (token.user as { id: string }).id },
             select: { role: true }
           })
           if (dbUser?.role) {
-            token.user.role = dbUser.role as any
+            (token.user as { id: string; role?: string | null }).role = dbUser.role as string
           }
         } catch {}
       }
@@ -65,8 +65,8 @@ export const authOptions: NextAuthOptions = {
         refreshToken: token.refreshToken,
         user: {
           ...session.user,
-          id: token.user?.id,
-          role: token.user?.role || null
+          id: (token.user as { id?: string })?.id,
+          role: (token.user as { role?: string | null })?.role || null
         }
       }
     },
@@ -123,7 +123,7 @@ export const authOptions: NextAuthOptions = {
     }
   },
   events: {
-    async signIn({ user }) {
+    async signIn() {
       // no-op for now
     }
   },

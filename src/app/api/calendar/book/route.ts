@@ -5,6 +5,14 @@ import { createCalendarEvent } from "@/lib/google-calendar"
 import { prisma } from "@/lib/prisma"
 import { z } from "zod"
 
+interface SessionUser {
+  id: string
+  email?: string | null
+  name?: string | null
+  image?: string | null
+  role?: string | null
+}
+
 const bookingSchema = z.object({
   sellerId: z.string(),
   startTime: z.string(),
@@ -17,7 +25,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session || !session.user?.id) {
+    if (!session || !(session.user as SessionUser)?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -26,7 +34,7 @@ export async function POST(request: NextRequest) {
 
     if (!validation.success) {
       return NextResponse.json(
-        { error: "Invalid request data", details: validation.error.errors },
+        { error: "Invalid request data", details: validation.error.issues },
         { status: 400 }
       )
     }
@@ -57,7 +65,7 @@ export async function POST(request: NextRequest) {
     // Create calendar event
     const event = await createCalendarEvent(
       sellerId,
-      session.user.id,
+      (session.user as SessionUser).id,
       startTime,
       endTime,
       title || "Scheduled Meeting",
@@ -68,7 +76,7 @@ export async function POST(request: NextRequest) {
     const appointment = await prisma.appointment.create({
       data: {
         sellerId,
-        buyerId: session.user.id,
+        buyerId: (session.user as SessionUser).id,
         startTime: new Date(startTime),
         endTime: new Date(endTime),
         googleEventId: event.id || undefined,

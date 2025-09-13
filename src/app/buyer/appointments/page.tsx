@@ -10,7 +10,6 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar, Users, Search, LogOut, Plus } from "lucide-react"
 import { signOut } from "next-auth/react"
-import { addMinutes, formatISO, startOfDay, endOfDay } from "date-fns"
 
 interface Seller {
   id: string
@@ -57,8 +56,8 @@ export default function BuyerAppointments() {
   })()
 
   useEffect(() => {
-    const role = (session as any)?.user?.role as string | null | undefined
-    if (!(session as any)?.user) return
+    const role = session?.user?.role as string | null | undefined
+    if (!session?.user) return
     if (!role) {
       router.push("/role-selection")
       return
@@ -195,7 +194,7 @@ export default function BuyerAppointments() {
   }
 
   const filteredSellers = sellers
-    .filter(seller => seller.id !== ((session as any)?.user?.id as string))
+    .filter(seller => seller.id !== ((session?.user as any)?.id as string))
     .filter(seller =>
       (seller.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
       seller.email.toLowerCase().includes(searchTerm.toLowerCase())

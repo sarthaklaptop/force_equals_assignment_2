@@ -3,21 +3,32 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
+interface SessionUser {
+  id: string
+  email?: string | null
+  name?: string | null
+  image?: string | null
+  role?: string | null
+}
+
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session || !session.user?.id) {
+    if (!session || !(session.user as SessionUser)?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const { searchParams } = new URL(request.url)
     const type = searchParams.get("type") || "all" // "upcoming", "past", "all"
 
-    const whereClause: any = {
+    const whereClause: {
+      OR: Array<{ sellerId: string } | { buyerId: string }>
+      startTime?: { gte?: Date; lt?: Date }
+    } = {
       OR: [
-        { sellerId: session.user.id },
-        { buyerId: session.user.id }
+        { sellerId: (session.user as SessionUser).id },
+        { buyerId: (session.user as SessionUser).id }
       ]
     }
 

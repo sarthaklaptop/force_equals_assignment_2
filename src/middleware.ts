@@ -12,16 +12,16 @@ export default withAuth(
     }
 
     // Force role selection if not set
-    if (!token.user?.role && !pathname.startsWith("/role-selection") && !pathname.startsWith("/api")) {
+    if (!(token.user as { role?: string })?.role && !pathname.startsWith("/role-selection") && !pathname.startsWith("/api")) {
       return NextResponse.redirect(new URL("/role-selection", req.url))
     }
 
     // Check role-based access
-    if (pathname.startsWith("/seller") && token.user?.role !== "SELLER") {
+    if (pathname.startsWith("/seller") && (token.user as { role?: string })?.role !== "SELLER") {
       return NextResponse.redirect(new URL("/buyer/appointments", req.url))
     }
 
-    if (pathname.startsWith("/buyer") && token.user?.role !== "BUYER") {
+    if (pathname.startsWith("/buyer") && (token.user as { role?: string })?.role !== "BUYER") {
       return NextResponse.redirect(new URL("/seller/dashboard", req.url))
     }
 

@@ -1,9 +1,17 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
-export async function GET(request: NextRequest) {
+interface SessionUser {
+  id: string
+  email?: string | null
+  name?: string | null
+  image?: string | null
+  role?: string | null
+}
+
+export async function GET() {
   try {
     const session = await getServerSession(authOptions)
     
@@ -14,7 +22,7 @@ export async function GET(request: NextRequest) {
     const sellers = await prisma.user.findMany({
       where: {
         role: "SELLER",
-        NOT: { id: session.user.id as string }
+        NOT: { id: (session.user as SessionUser).id }
       },
       select: {
         id: true,

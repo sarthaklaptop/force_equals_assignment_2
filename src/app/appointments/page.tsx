@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -38,16 +38,7 @@ export default function AppointmentsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("upcoming")
 
-  useEffect(() => {
-    if (!session) {
-      router.push("/")
-      return
-    }
-
-    fetchAppointments()
-  }, [session, router, activeTab])
-
-  const fetchAppointments = async () => {
+  const fetchAppointments = useCallback(async () => {
     setIsLoading(true)
     try {
       const response = await fetch(`/api/appointments?type=${activeTab}`)
@@ -60,7 +51,16 @@ export default function AppointmentsPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [activeTab])
+
+  useEffect(() => {
+    if (!session) {
+      router.push("/")
+      return
+    }
+
+    fetchAppointments()
+  }, [session, router, activeTab, fetchAppointments])
 
   const handleSignOut = () => {
     signOut({ callbackUrl: "/" })
@@ -219,13 +219,12 @@ export default function AppointmentsPage() {
                             >
                               {appointment.status}
                             </Badge>
-                            {appointment.googleEventId && (
+                            {(appointment as any).googleEventId && (
                               <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={() => {
-                                  // This would open the Google Calendar event
-                                  console.log("Open Google Calendar event:", appointment.googleEventId)
+                                  console.log("Open Google Calendar event:", (appointment as any).googleEventId)
                                 }}
                               >
                                 View in Calendar

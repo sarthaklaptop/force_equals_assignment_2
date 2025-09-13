@@ -4,6 +4,14 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { z } from "zod"
 
+interface SessionUser {
+  id: string
+  email?: string | null
+  name?: string | null
+  image?: string | null
+  role?: string | null
+}
+
 const roleSchema = z.object({
   role: z.enum(["BUYER", "SELLER"])
 })
@@ -12,7 +20,7 @@ export async function PUT(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session || !session.user?.id) {
+    if (!session || !(session.user as SessionUser)?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -21,7 +29,7 @@ export async function PUT(request: NextRequest) {
 
     if (!validation.success) {
       return NextResponse.json(
-        { error: "Invalid role", details: validation.error.errors },
+        { error: "Invalid role", details: validation.error.issues },
         { status: 400 }
       )
     }
@@ -30,7 +38,7 @@ export async function PUT(request: NextRequest) {
 
     // Allow setting role only once
     const existing = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: (session.user as SessionUser).id },
       select: { role: true }
     })
 
@@ -39,7 +47,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const updatedUser = await prisma.user.update({
-      where: { id: session.user.id },
+      where: { id: (session.user as SessionUser).id },
       data: { role },
       select: {
         id: true,
